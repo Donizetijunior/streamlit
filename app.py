@@ -133,8 +133,10 @@ with st.sidebar:
                 st.session_state["auth"] = True
                 st.session_state["usuario"] = user
                 st.session_state["perfil"] = usuarios[user].get("perfil", "usuario")
+                registrar_acesso(user, True)
                 st.rerun()
             else:
+                registrar_acesso(user, False)
                 st.error("Credenciais inválidas")
     else:
         st.write(f"👤 Usuário: {st.session_state['usuario']}")
