@@ -218,6 +218,9 @@ if st.session_state['pagina'] == "Dashboard":
     if 'df' in st.session_state:
         df = st.session_state['df']
         
+        # Debug: Mostrar colunas disponíveis
+        st.write("Colunas disponíveis:", df.columns.tolist())
+        
         # Renomear coluna
         df['InstanceId'] = df['Resource ID']
         df['Nome_Instancia'] = df['InstanceId'].map(map_id_nome)
@@ -287,12 +290,15 @@ if st.session_state['pagina'] == "Dashboard":
 
         # Gráfico de linha temporal
         st.markdown("#### Evolução das Vulnerabilidades ao Longo do Tempo")
-        timeline = df_filtrado.groupby(df_filtrado['First Seen'].dt.date).size()
-        st.line_chart(timeline)
+        if 'First Seen' in df.columns:
+            timeline = df.groupby(df['First Seen'].dt.date).size()
+            st.line_chart(timeline)
+        else:
+            st.warning("Coluna 'First Seen' não encontrada no DataFrame")
 
         # Distribuição de severidade
         st.markdown("#### Distribuição por Severidade")
-        severidade_dist = df_filtrado['Severity'].value_counts()
+        severidade_dist = df['Severity'].value_counts()
         st.bar_chart(severidade_dist)
         
         # Adicionar métricas de distribuição
