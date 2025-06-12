@@ -228,6 +228,10 @@ if st.session_state['pagina'] == "Dashboard":
             st.error(f"Colunas necessárias não encontradas: {', '.join(colunas_faltantes)}")
             st.stop()
         
+        # Converter First Seen para datetime se necessário
+        if 'First Seen' in df.columns:
+            df['First Seen'] = pd.to_datetime(df['First Seen'])
+        
         # Métricas principais
         col1, col2, col3, col4 = st.columns(4)
         with col1:
@@ -292,7 +296,6 @@ if st.session_state['pagina'] == "Dashboard":
 
         # Gráfico de linha temporal
         st.markdown("#### Evolução das Vulnerabilidades ao Longo do Tempo")
-        df['First Seen'] = pd.to_datetime(df['First Seen'])
         timeline = df.groupby(df['First Seen'].dt.date).size()
         st.line_chart(timeline)
 
