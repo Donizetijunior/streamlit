@@ -228,7 +228,7 @@ if st.session_state['pagina'] == "Dashboard":
         with col1:
             st.metric("Total de Vulnerabilidades", len(df))
         with col2:
-            st.metric("Instâncias Afetadas", df['Nome_Instancia'].nunique())
+            st.metric("Instâncias Afetadas", df['Resource ID'].nunique())
         with col3:
             st.metric("Severidade Crítica", len(df[df['Severity'] == 'CRITICAL']))
         with col4:
@@ -282,7 +282,7 @@ if st.session_state['pagina'] == "Dashboard":
         
         # Gráfico de vulnerabilidades por instância e severidade
         st.markdown("#### Vulnerabilidades por Instância e Severidade")
-        chart_data = df_filtrado.groupby(['Nome_Instancia', 'Severity']).size().unstack(fill_value=0)
+        chart_data = df.groupby(['Resource ID', 'Severity']).size().unstack(fill_value=0)
         st.bar_chart(chart_data)
 
         # Gráfico de linha temporal
