@@ -3,11 +3,13 @@ Description=Streamlit AWS Inspector Dashboard
 After=network.target
 
 [Service]
+Type=simple
 User=root
 WorkingDirectory=/root/streamlit
 Environment="PATH=/root/streamlit/venv/bin"
-ExecStart=/root/streamlit/venv/bin/streamlit run app.py --server.port 8501 --server.address 0.0.0.0
+ExecStart=/root/streamlit/venv/bin/streamlit run /root/streamlit/app.py --server.port 8501 --server.address 0.0.0.0
 Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target 
