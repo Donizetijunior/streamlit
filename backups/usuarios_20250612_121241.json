@@ -1,0 +1,16 @@
+{
+    "admin": {
+        "senha": "ed2b305c9c0908593a9752bb4d4b2644af409c4249b2ed24bd7c4f80ec25d662",
+        "salt": "443af9c0fcc55251e00fd8a652922306",
+        "perfil": "admin",
+        "ultimo_acesso": "Nunca",
+        "data_criacao": "2025-06-12 12:12:41"
+    },
+    "joao": {
+        "senha": "afb41b5f3337457c13f023ed30eab4dc7cb85c0794a85d6be3a40827bd34fe34",
+        "salt": "4344481ec5fa99e6019c0b2fe1d7e585",
+        "perfil": "usuario",
+        "ultimo_acesso": "Nunca",
+        "data_criacao": "2025-06-12 12:12:41"
+    }
+}
