@@ -1,0 +1,27 @@
+# Arquivos de ambiente
+.env
+venv/
+__pycache__/
+*.pyc
+
+# Arquivos de dados
+*.json
+*.csv
+*.txt
+!requirements.txt
+!README.md
+
+# Logs
+*.log
+log_acessos.txt
+
+# Backups
+backups/
+
+# IDEs
+.vscode/
+.idea/
+
+# Sistema
+.DS_Store
+Thumbs.db 
