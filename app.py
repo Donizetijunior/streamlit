@@ -221,11 +221,13 @@ if st.session_state['pagina'] == "Dashboard":
         # Debug: Mostrar colunas disponíveis
         st.write("Colunas disponíveis:", df.columns.tolist())
         
-        # Renomear coluna
-        df['InstanceId'] = df['Resource ID']
-        df['Nome_Instancia'] = df['InstanceId'].map(map_id_nome)
-        df['First Seen'] = pd.to_datetime(df['First Seen'])
-
+        # Verificar se as colunas necessárias existem
+        colunas_necessarias = ['Resource ID', 'Severity', 'First Seen']
+        colunas_faltantes = [col for col in colunas_necessarias if col not in df.columns]
+        if colunas_faltantes:
+            st.error(f"Colunas necessárias não encontradas: {', '.join(colunas_faltantes)}")
+            st.stop()
+        
         # Métricas principais
         col1, col2, col3, col4 = st.columns(4)
         with col1:
@@ -244,7 +246,7 @@ if st.session_state['pagina'] == "Dashboard":
         with col1:
             instancia_filtro = st.multiselect(
                 "Filtrar por Instância",
-                options=sorted(df['Nome_Instancia'].dropna().unique()),
+                options=sorted(df['Resource ID'].dropna().unique()),
                 help="Selecione uma ou mais instâncias para filtrar"
             )
         
@@ -272,7 +274,7 @@ if st.session_state['pagina'] == "Dashboard":
         # Aplicar filtros
         df_filtrado = df.copy()
         if instancia_filtro:
-            df_filtrado = df_filtrado[df_filtrado['Nome_Instancia'].isin(instancia_filtro)]
+            df_filtrado = df_filtrado[df_filtrado['Resource ID'].isin(instancia_filtro)]
         if severidade_filtro:
             df_filtrado = df_filtrado[df_filtrado['Severity'].isin(severidade_filtro)]
         df_filtrado = df_filtrado[
@@ -290,11 +292,9 @@ if st.session_state['pagina'] == "Dashboard":
 
         # Gráfico de linha temporal
         st.markdown("#### Evolução das Vulnerabilidades ao Longo do Tempo")
-        if 'First Seen' in df.columns:
-            timeline = df.groupby(df['First Seen'].dt.date).size()
-            st.line_chart(timeline)
-        else:
-            st.warning("Coluna 'First Seen' não encontrada no DataFrame")
+        df['First Seen'] = pd.to_datetime(df['First Seen'])
+        timeline = df.groupby(df['First Seen'].dt.date).size()
+        st.line_chart(timeline)
 
         # Distribuição de severidade
         st.markdown("#### Distribuição por Severidade")
@@ -374,7 +374,7 @@ if st.session_state['pagina'] == "Dashboard":
 
         # Lista de colunas disponíveis
         colunas_disponiveis = df_filtrado.columns.tolist()
-        colunas_para_exibir = [col for col in ['Nome_Instancia', 'Severity', 'Title', 'First Seen', 'Description'] 
+        colunas_para_exibir = [col for col in ['Resource ID', 'Severity', 'Title', 'First Seen', 'Description'] 
                              if col in colunas_disponiveis]
 
         if view_option == "Tabela Completa":
@@ -384,7 +384,7 @@ if st.session_state['pagina'] == "Dashboard":
                 hide_index=True
             )
         elif view_option == "Resumo por Instância":
-            resumo_instancia = df_filtrado.groupby('Nome_Instancia').agg({
+            resumo_instancia = df_filtrado.groupby('Resource ID').agg({
                 'Severity': lambda x: dict(x.value_counts()),
                 'Title': 'count'
             }).reset_index()
@@ -392,7 +392,7 @@ if st.session_state['pagina'] == "Dashboard":
             st.dataframe(resumo_instancia, use_container_width=True, hide_index=True)
         else:
             resumo_severidade = df_filtrado.groupby('Severity').agg({
-                'Nome_Instancia': 'nunique',
+                'Resource ID': 'nunique',
                 'Title': 'count'
             }).reset_index()
             resumo_severidade.columns = ['Severidade', 'Instâncias Afetadas', 'Total de Vulnerabilidades']
