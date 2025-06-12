@@ -5,7 +5,6 @@ __pycache__/
 *.pyc
 
 # Arquivos de dados
-*.json
 *.csv
 *.txt
 !requirements.txt

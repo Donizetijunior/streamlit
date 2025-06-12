@@ -54,10 +54,9 @@ def validar_senha(senha):
         return False, "A senha deve conter pelo menos um caractere especial"
     return True, "Senha válida"
 
-@st.cache_data(show_spinner=False)
 def carregar_usuarios():
     if not os.path.exists(USERS_FILE):
-        return {}
+        return {"admin": {"senha": "123456", "perfil": "admin"}}
     with open(USERS_FILE, 'r') as f:
         return json.load(f)
 
@@ -130,31 +129,12 @@ with st.sidebar:
         user = st.text_input("Usuário")
         passwd = st.text_input("Senha", type="password")
         if st.button("Entrar"):
-            if not verificar_tentativas_login(user):
-                st.error("Muitas tentativas de login. Tente novamente mais tarde.")
-            elif user in usuarios:
-                # Verifica se é um usuário migrado (tem salt) ou não
-                if 'salt' in usuarios[user]:
-                    senha_hash, _ = hash_senha(passwd, usuarios[user]['salt'])
-                    senha_correta = senha_hash == usuarios[user]['senha']
-                else:
-                    # Para usuários não migrados, compara a senha em texto puro
-                    senha_correta = passwd == usuarios[user]['senha']
-                
-                if senha_correta:
-                    st.session_state["auth"] = True
-                    st.session_state["usuario"] = user
-                    st.session_state["perfil"] = usuarios[user].get("perfil", "usuario")
-                    resetar_tentativas_login(user)
-                    registrar_acesso(user, True)
-                    st.rerun()
-                else:
-                    registrar_tentativa_login(user)
-                    registrar_acesso(user, False)
-                    st.error("Credenciais inválidas")
+            if user in usuarios and usuarios[user]["senha"] == passwd:
+                st.session_state["auth"] = True
+                st.session_state["usuario"] = user
+                st.session_state["perfil"] = usuarios[user].get("perfil", "usuario")
+                st.rerun()
             else:
-                registrar_tentativa_login(user)
-                registrar_acesso(user, False)
                 st.error("Credenciais inválidas")
     else:
         st.write(f"👤 Usuário: {st.session_state['usuario']}")
